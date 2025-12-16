@@ -1,0 +1,5 @@
+{
+  "name": "uply",
+  "script": "./server.js",
+  "instances": "1"
+}
