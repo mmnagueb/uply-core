@@ -1,15 +1,14 @@
-const userProfile = require("../model/user/profile");
-const userAuth = require("../model/auth/user_auth");
+const UserProfile = require("../model/user/profile");
+const UserAuth = require("../model/auth/user_auth");
 const logger = require("../../logger").logger;
 
 const addProfile = async (user) => {
-    // add user to databas
+    /// create new user profile
     try {
-        const result = await userProfile.create({
-            username: user.username.toLowerCase().trim(),
-            email: user.email
+        return await UserProfile.create({
+            username: user.username,
+            email: user.email,
         });
-        return result;
     } catch (error) {
         logger.error(error);
         return error;
@@ -19,25 +18,24 @@ const addProfile = async (user) => {
 const addUserAuth = async (payload) => {
     // add user to databas
     try {
-        const result = await userAuth.create({
-            username: payload.username.toLowerCase(),
+        return await UserAuth.create({
+            username: payload.username,
+            email: payload.email,
             password: payload.password,
         });
-        return result;
     } catch (error) {
         logger.error(error);
         return error;
     }
 };
 
-const isValidated = async (consumer, password) => {
-    // add user to databas
+const isValidated = async (filter, password) => {
     try {
-        const filter = { username: consumer.username };
-        // fetch the user and test password verification
-        const result = await userAuth.findOne(filter);
-        const isValid = await result.comparePassword(password);
-        return isValid;
+        /// fetch the user and test password verification
+        const result = await UserAuth.findOne(filter);
+        
+        /// is valid or not [True/False]
+        return await result.comparePassword(password);
     } catch (error) {
         logger.error(error);
         return error;
@@ -52,9 +50,9 @@ const updateUser = async (user, username) => {
         const replacementDocument = {
             first_name: user.first_name,
             last_name: user.last_name,
-            };
+        };
 
-        const result = await userProfile.findOneAndUpdate(
+        const result = await UserProfile.findOneAndUpdate(
             filter,
             replacementDocument,
             {
@@ -69,11 +67,33 @@ const updateUser = async (user, username) => {
     }
 };
 
-const getUser = async (username) => {
+// const getUser = async (userFilter) => {
+//     try {
+//         const filter = { username: userFilter.toLowerCase() };
+//         const result = await UserProfile.findOne(filter);
+//         return result;
+//     } catch (error) {
+//         logger.error(error);
+//         return error;
+//     }
+// };
+
+const getUserByUsername = async (username) => {
     try {
-        const filter = { username: username.toLowerCase() };
-        const result = await userProfile.findOne(filter);
-        return result;
+        return await UserProfile.findOne(
+            { username: username.toLowerCase() }
+        );
+    } catch (error) {
+        logger.error(error);
+        return error;
+    }
+};
+
+const getUserByEmail = async (email) => {
+    try {
+        return await UserProfile.findOne(
+            { email: email.toLowerCase() }
+        );
     } catch (error) {
         logger.error(error);
         return error;
@@ -84,6 +104,8 @@ module.exports = {
     addProfile,
     addUserAuth,
     updateUser,
-    getUser,
+    // getUser,
+    getUserByUsername,
+    getUserByEmail,
     isValidated
 };

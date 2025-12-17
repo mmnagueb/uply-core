@@ -1,8 +1,8 @@
 /* eslint-disable no-undef */
 const mongo = require("../../mongo_conn_native").Connection;
-const user = require("./../model/auth/user_auth")
-const userProfile = require("../model/user/profile");
-const auth = require("./../model/auth/auth")
+const UserAuth = require("./../model/auth/user_auth")
+const UserProfile = require("../model/user/profile");
+const UserToken = require("./../model/auth/user_token")
 const supertest = require("supertest");
 const app = require("../../server");
 const publicRouter = require("../restAPI/routes/route_public");
@@ -16,9 +16,9 @@ describe("contain user apis", function () {
     // }, 10000);
 
     afterAll(async () => {
-        await user.deleteOne({ userId: testId });
-        await auth.deleteOne({ userId: testId });
-        await userProfile.deleteOne({ username: "username_sample_test" });
+        await UserAuth.deleteOne({ userId: testId });
+        await UserToken.deleteOne({ userId: testId });
+        await UserProfile.deleteOne({ username: "username_sample_test" });
         mongo.close();
     });
 

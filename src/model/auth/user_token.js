@@ -1,11 +1,10 @@
 const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
 
-const authSchema = new Schema({
-    // required - ref to user profile
+const UserTokenSchema = new Schema({
     username: {
         type: Schema.Types.ObjectId,
-        ref: "userProfile",
+        ref: "UserProfile",
         required: "User id is required.",
         trim: true,
         lowercase: true
@@ -30,10 +29,10 @@ const authSchema = new Schema({
     },
 });
 
-authSchema.pre("save", function (next) {
+UserTokenSchema.pre("save", function (next) {
     this.updatedAt = Date.now();
     next();
 });
 
-const auth = model("token", authSchema);
-module.exports = auth;
+const UserToken = model("UserToken", UserTokenSchema);
+module.exports = UserToken;

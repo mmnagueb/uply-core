@@ -4,8 +4,8 @@ const router = express.Router();
 /* eslint-disable-next-line */
 const logger = require("../../../logger").logger;
 const Response = require("../../common/response").Response;
-const userDbInstance = require("./../../database/db_user");
-const authDbInstance = require("./../../database/db_auth");
+const userDB = require("./../../database/db_user");
+const authDB = require("./../../database/db_auth");
 
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
@@ -14,78 +14,78 @@ var nodemailer = require("nodemailer");
 const env = require("../../../config/default.json").env;
 
 function generateAccessToken(user) {
-    return jwt.sign(user, process.parsed.ACCESS_TOKEN_SECRET, {
-        expiresIn: "360d",
-    });
+  return jwt.sign(user, process.parsed.ACCESS_TOKEN_SECRET, {
+    expiresIn: "360d",
+  });
 }
 
 function generatePassword() {
-    const length = 20;
-    const wishlist =
-        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~!@-#$";
-    return Array.from(crypto.randomFillSync(new Uint32Array(length)))
-        .map((x) => wishlist[x % wishlist.length])
-        .join("");
+  const length = 20;
+  const wishlist =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~!@-#$";
+  return Array.from(crypto.randomFillSync(new Uint32Array(length)))
+    .map((x) => wishlist[x % wishlist.length])
+    .join("");
 }
 
 async function sendEmail(password, userEmail) {
-    // Generate test SMTP service account from ethereal.email
-    // Only needed if you don't have a real mail account for testing
-    /* eslint-disable-next-line */
-    nodemailer.createTestAccount((err, account) => {
-        if (err) {
-            logger.error(err);
-            console.error("Failed to create a testing account. " + err.message);
-            return process.exit(1);
-        }
-        // create reusable transporter object using the default SMTP transport
-        let transporter = nodemailer.createTransport({
-            service: "gmail",
-            auth: {
-                user: process.parsed.GMAIL_NODEMAILER_EMAIL,
-                pass: process.parsed.GMAIL_NODEMAILER_PASS,
-            },
-            // host: account.smtp.host,
-            // port: account.smtp.port,
-            // secure: account.smtp.secure,
-            // auth: {
-            //     user: account.user,
-            //     pass: account.pass,
-            // },
-            // host: "smtp.ethereal.email",
-            // port: 587,
-            // secure: false, // true for 465, false for other ports
-            // auth: {
-            //     user: testAccount.user, // generated ethereal user
-            //     pass: testAccount.pass, // generated ethereal password
-            // },
-        });
-
-        // Message object
-        let message = {
-            from: "Uply Customer Care <mutairibassam@gmail.com>", // sender address
-            to: userEmail, // list of receivers
-            subject: "Uply login code", // Subject line
-            text: password,
-            html: `<p>Please use below code to login:</p> </br><b>${password}</b>`, // html body
-        };
-
-        transporter.sendMail(message, (err, info) => {
-            if (err) {
-                logger.error(err);
-                console.log("Error occurred. " + err.message);
-                return process.exit(1);
-            }
-            logger.info(info.response);
-
-            // console.log("Message sent: %s", info.messageId);
-            // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-
-            // Preview only available when sending through an Ethereal account
-            // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-            // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
-        });
+  // Generate test SMTP service account from ethereal.email
+  // Only needed if you don't have a real mail account for testing
+  /* eslint-disable-next-line */
+  nodemailer.createTestAccount((err, account) => {
+    if (err) {
+      logger.error(err);
+      console.error("Failed to create a testing account. " + err.message);
+      return process.exit(1);
+    }
+    // create reusable transporter object using the default SMTP transport
+    let transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.parsed.GMAIL_NODEMAILER_EMAIL,
+        pass: process.parsed.GMAIL_NODEMAILER_PASS,
+      },
+      // host: account.smtp.host,
+      // port: account.smtp.port,
+      // secure: account.smtp.secure,
+      // auth: {
+      //     user: account.user,
+      //     pass: account.pass,
+      // },
+      // host: "smtp.ethereal.email",
+      // port: 587,
+      // secure: false, // true for 465, false for other ports
+      // auth: {
+      //     user: testAccount.user, // generated ethereal user
+      //     pass: testAccount.pass, // generated ethereal password
+      // },
     });
+
+    // Message object
+    let message = {
+      from: "Uply Customer Care <mutairibassam@gmail.com>", // sender address
+      to: userEmail, // list of receivers
+      subject: "Uply login code", // Subject line
+      text: password,
+      html: `<p>Please use below code to login:</p> </br><b>${password}</b>`, // html body
+    };
+
+    transporter.sendMail(message, (err, info) => {
+      if (err) {
+        logger.error(err);
+        console.log("Error occurred. " + err.message);
+        return process.exit(1);
+      }
+      logger.info(info.response);
+
+      // console.log("Message sent: %s", info.messageId);
+      // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+      // Preview only available when sending through an Ethereal account
+      // console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+      // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+    });
+  });
 }
 
 /**
@@ -98,12 +98,12 @@ async function sendEmail(password, userEmail) {
  */
 
 exports.testAPI = async (req, res) => {
-    res.status(200).send({
-        message: "Test API Works",
-        code: 200,
-        success: true,
-        data: [],
-    });
+  res.status(200).send({
+    message: "Test API Works",
+    code: 200,
+    success: true,
+    data: [],
+  });
 };
 
 /**
@@ -116,48 +116,54 @@ exports.testAPI = async (req, res) => {
  */
 
 exports.createAPI = async (req, res) => {
-    try {
-        
+  try {
     const data = req.body.data;
-    /// username + email + password
-    /// github, google (not covered)!
     /**
-     *  { 
+     *  {
      *      "data": {
      *          "username": "test_acount",
      *          "email": "test@gmail.com",
      *          "password": "SECRET"
      *      }
      * }
-     * 
+     *
      */
 
     if (!data) {
-        return res.status(400).send(
-            Response.badRequest({
-                msg: "You should add user data to create a new user.",
-            })
-        );
+      return res.status(400).send(
+        Response.badRequest({
+          msg: "You should add user data to create a new user.",
+        })
+      );
     }
     /// validate if the user is already exist...
-    const isExist = await userDbInstance.getUser(data.username);
-    if(isExist !== null) return res.status(401).send(
+    const isUserExist = await userDB.getUserByUsername(data.username);
+    if (isUserExist !== null)
+      return res.status(401).send(
         Response.badRequest({
-            msg: "Username is already exist.",
-        }) 
-    );
-    await userDbInstance.addUserAuth(data);
-    const result = await userDbInstance.addProfile(data);
+          msg: "Username is already exist.",
+        })
+      );
+    const isEmailExist = await userDB.getUserByEmail(data.email);
+    if (isEmailExist !== null)
+      return res.status(401).send(
+        Response.badRequest({
+          msg: "Email is already exist.",
+        })
+      );
+
+    await userDB.addUserAuth(data);
+    const result = await userDB.addProfile(data);
     if (result.code === 11000 || result.level === "error") {
-        return res.status(401).send(
-            Response.unauthorized({
-                msg: result.message,
-            })
-        );
+      return res.status(401).send(
+        Response.unauthorized({
+          msg: result.message,
+        })
+      );
     }
     // generate password
     // const passwd = generatePassword();
-    // const user = await userDbInstance.addUser(result, passwd);
+    // const user = await userDB.addUser(result, passwd);
     // if (user.code === 11000 || user.level === "error") {
     //     return res.status(401).send(
     //         Response.unauthorized({
@@ -168,7 +174,7 @@ exports.createAPI = async (req, res) => {
     // const filter = { username: result.username };
     // const accessToken = generateAccessToken(filter);
     // const refreshToken = jwt.sign(filter, process.parsed.REFRESH_TOKEN_SECRET);
-    // const tokens = await authDbInstance.addTokens(
+    // const tokens = await authDB.addTokens(
     //     data,
     //     accessToken,
     //     refreshToken
@@ -187,19 +193,17 @@ exports.createAPI = async (req, res) => {
     //     console.log(passwd);
     // }
     return res.status(201).send(
-        Response.successful({
-            msg: result._message,
-            code: 201,
-            // data: { result, tokens },
-            data: result,
-        })
+      Response.successful({
+        msg: result._message,
+        code: 201,
+        // data: { result, tokens },
+        data: result,
+      })
     );
-    } catch (error) {
-        logger.error(error)
-        return res.status(503).send(
-            Response.unknown()
-        )
-    }
+  } catch (error) {
+    logger.error(error);
+    return res.status(503).send(Response.unknown());
+  }
 };
 
 /**
@@ -212,72 +216,77 @@ exports.createAPI = async (req, res) => {
  */
 
 exports.loginAPI = async (req, res) => {
-    // Authenticate User
-    if(!req.body.data) {
-        return res.status(400).send(
-            Response.badRequest({
-                msg: "You should add user data to create a new user.",
-            })
-        ); 
-    }
-    const username = req.body.data.username;
-    const password = req.body.data.password;
-
-    if (!username || !password) {
-        return res.status(401).send(
-            Response.unauthorized({
-                msg: "You should add user data to create a new user.",
-            })
-        );
-    }
-    const consumer = await userDbInstance.getUser(username);
-    if (!consumer || consumer.level == "error") {
-        return res
-            .status(400)
-            .send(Response.badRequest({ msg: "Username is not exist." }));
-    }
-
-    const isValid = await userDbInstance.isValidated(consumer, password);
-    if (isValid !== true) {
-        return res
-            .status(400)
-            .send(Response.unauthorized({ msg: "Password is incorrect." }));
-    }
-    const user = { username: consumer.username };
-    const accessToken = generateAccessToken(user);
-    const refreshToken = jwt.sign(user, process.parsed.REFRESH_TOKEN_SECRET);
-    const result = await authDbInstance.updateTokens(
-        consumer._id,
-        accessToken,
-        refreshToken,
-        true
+  // Authenticate User
+  if (!req.body.data) {
+    return res.status(400).send(
+      Response.badRequest({
+        msg: "You should add user data to login a new user.",
+      })
     );
-    if (result.level == "error") {
-        return res
-            .status(400)
-            .send(Response.badRequest({ msg: "Username is not exist." }));
+  }
+  const username = req.body.data.username;
+  const email = req.body.data.email;
+  const password = req.body.data.password;
+
+  if ((!username && !email) || !password) {
+    return res.status(401).send(
+      Response.unauthorized({
+        msg: "You should add user data to login a new user.",
+      })
+    );
+  }
+
+  let consumer;
+  let filter = {};
+
+  try {
+    if (email !== undefined) {
+      consumer = await userDB.getUserByEmail(email);
+      filter = { email: consumer.email };
+    } else {
+      consumer = await userDB.getUserByUsername(username);
+      filter = { username: consumer.username };
     }
-    if (!result) {
-        const tokens = await authDbInstance.addTokens(
-            consumer,
-            accessToken,
-            refreshToken
-        );
-        return res.status(200).send(
-            Response.successful({
-                data: {
-                    user: tokens,
-                },
-            })
-        );
-    }
+  } catch (error) {
+    return res
+      .status(400)
+      .send(Response.badRequest({ msg: "Username is not exist." }));
+  }
+
+  const isValid = await userDB.isValidated(filter, password);
+  if (isValid !== true) {
+    return res
+      .status(400)
+      .send(Response.unauthorized({ msg: "Password is incorrect." }));
+  }
+
+  const user = { username: consumer.username };
+  const accessToken = generateAccessToken(user);
+  const refreshToken = jwt.sign(user, process.parsed.REFRESH_TOKEN_SECRET);
+  const result = await authDB.updateTokens(
+    consumer._id,
+    accessToken,
+    refreshToken,
+    true
+  );
+  if (result.level == "error") {
+    return res.status(500).send(Response.unknown());
+  }
+  if (!result) {
+    const tokens = await authDB.addTokens(consumer, accessToken, refreshToken);
     return res.status(200).send(
-        Response.successful({
-            data: {
-                user: result,
-            },
-        })
+      Response.successful({
+        data: tokens
+      })
     );
+  }
+  return res.status(200).send(
+    Response.successful({
+      data: {
+        user: result,
+      },
+    })
+  );
 };
 
 /**
@@ -290,35 +299,35 @@ exports.loginAPI = async (req, res) => {
  */
 
 exports.refreshAPI = async (req, res) => {
-    const username = req.body.data.username;
-    const refreshToken = req.body.data.refreshToken;
+  const username = req.body.data.username;
+  const refreshToken = req.body.data.refreshToken;
 
-    if (refreshToken == null) return res.sendStatus(401);
-    //if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
-    jwt.verify(
-        refreshToken,
-        process.parsed.REFRESH_TOKEN_SECRET,
-        async (err, user) => {
-            if (err) return res.sendStatus(403);
-            const accessToken = generateAccessToken({ name: user.username });
-            const newRefreshToken = jwt.sign(
-                user,
-                process.parsed.REFRESH_TOKEN_SECRET
-            );
-            const result = await authDbInstance.updateTokens(
-                username,
-                accessToken,
-                newRefreshToken,
-                false
-            );
-            if (result === false) {
-                return res.status(401).send(Response.forbidden({}));
-            }
-            return res.status(200).send(
-                Response.successful({
-                    data: result,
-                })
-            );
-        }
-    );
+  if (refreshToken == null) return res.sendStatus(401);
+  //if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
+  jwt.verify(
+    refreshToken,
+    process.parsed.REFRESH_TOKEN_SECRET,
+    async (err, user) => {
+      if (err) return res.sendStatus(403);
+      const accessToken = generateAccessToken({ name: user.username });
+      const newRefreshToken = jwt.sign(
+        user,
+        process.parsed.REFRESH_TOKEN_SECRET
+      );
+      const result = await authDB.updateTokens(
+        username,
+        accessToken,
+        newRefreshToken,
+        false
+      );
+      if (result === false) {
+        return res.status(401).send(Response.forbidden({}));
+      }
+      return res.status(200).send(
+        Response.successful({
+          data: result,
+        })
+      );
+    }
+  );
 };

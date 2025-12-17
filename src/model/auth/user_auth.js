@@ -3,13 +3,18 @@ const { Schema, model } = mongoose;
 const bcrypt = require("bcrypt");
 const SALT_WORK_FACTOR = 10;
 
-var UserSchema = new Schema({
+var UserAuthSchema = new Schema({
     username: {
-        // type: Schema.Types.ObjectId,
-        // ref: "userProfile",
         type: String,
-        required: "Username is required.",
+        required: true,
         trim: true,
+        lowercase: true
+    },
+    email: {
+        type: String,
+        required: true,
+        trim: true,
+        lowercase: true
     },
     password: { type: String, required: true },
     // auto-generated from backend
@@ -24,7 +29,7 @@ var UserSchema = new Schema({
     },
 });
 
-UserSchema.pre("save", function (next) {
+UserAuthSchema.pre("save", function (next) {
     var user = this;
 
     // only hash the password if it has been modified (or is new)
@@ -44,14 +49,14 @@ UserSchema.pre("save", function (next) {
     });
 });
 
-UserSchema.pre("save", function (next) {
+UserAuthSchema.pre("save", function (next) {
     this.updatedAt = Date.now();
     next();
 });
 
-UserSchema.methods.comparePassword = async function (candidatePassword) {
+UserAuthSchema.methods.comparePassword = async function (candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
 
-const userAuth = model("User", UserSchema);
-module.exports = userAuth;
+const UserAuth = model("UserAuth", UserAuthSchema);
+module.exports = UserAuth;

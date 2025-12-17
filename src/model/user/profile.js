@@ -4,24 +4,27 @@ const { Schema, model } = mongoose;
 var UserProfileSchema = new Schema({
     first_name: {
         type: String,
-        // required: "First name is required.",
-        trim: true,
+        trim: true
     },
     last_name: {
         type: String,
-        trim: true,
+        trim: true
     },
     username: {
         type: String,
         required: "Username is required.",
-        // unique: true,
+        unique: true,
         trim: true,
+        lowercase: true,
+        immutable: true
     },
     email: {
         type: String,
         required: "Email is required.",
-        // unique: true,
-        trim: true, 
+        unique: true,
+        trim: true,
+        lowercase: true,
+        immutable: true
     },
     // auto-generated from backend
     createdAt: {
@@ -40,5 +43,5 @@ UserProfileSchema.pre("save", function (next) {
     next();
 });
 
-const userProfile = model("userProfile", UserProfileSchema);
-module.exports = userProfile;
+const UserProfile = model("UserProfile", UserProfileSchema);
+module.exports = UserProfile;
