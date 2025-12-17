@@ -4,7 +4,7 @@ const router = express.Router();
 /* eslint-disable-next-line */
 const logger = require("../../../logger").logger;
 const Response = require("../../common/response").Response;
-const authDbInstance = require("./../../database/db_auth");
+const authDb = require("./../../database/db_auth");
 
 const jwt = require("jsonwebtoken");
 const process = require("dotenv").config();
@@ -27,7 +27,7 @@ function generateAccessToken(user) {
 exports.logoutAPI = async (req, res) => {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
-    const result = await authDbInstance.removeTokens(token);
+    const result = await authDb.removeTokens(token);
     if (!result) {
         return res.status(500).send(Response.unknown({}));
     }

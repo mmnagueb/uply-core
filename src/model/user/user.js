@@ -6,7 +6,7 @@
 // var UserSchema = new Schema({
 //     userId: {
 //         type: Schema.Types.ObjectId,
-//         ref: "userProfile",
+//         ref: "UserProfile",
 //         required: "User id is required.",
 //         trim: true,
 //     },
