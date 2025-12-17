@@ -2,12 +2,12 @@ const UserProfile = require("../model/user/profile");
 const UserAuth = require("../model/auth/user_auth");
 const logger = require("../../logger").logger;
 
-const addProfile = async (user) => {
+const addProfile = async (username, email) => {
     /// create new user profile
     try {
         return await UserProfile.create({
-            username: user.username,
-            email: user.email,
+            username: username,
+            email: email,
         });
     } catch (error) {
         logger.error(error);
@@ -15,13 +15,13 @@ const addProfile = async (user) => {
     }
 };
 
-const addUserAuth = async (payload) => {
+const addUserAuth = async (username, email, password) => {
     // add user to databas
     try {
         return await UserAuth.create({
-            username: payload.username,
-            email: payload.email,
-            password: payload.password,
+            username: username,
+            email: email,
+            password: password,
         });
     } catch (error) {
         logger.error(error);

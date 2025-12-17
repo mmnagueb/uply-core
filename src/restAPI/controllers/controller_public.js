@@ -117,7 +117,7 @@ exports.testAPI = async (req, res) => {
 
 exports.createAPI = async (req, res) => {
   try {
-    const data = req.body.data;
+    const { username, email, password } = req.body.data;
     /**
      *  {
      *      "data": {
@@ -129,7 +129,7 @@ exports.createAPI = async (req, res) => {
      *
      */
 
-    if (!data) {
+    if (!username || !email || !password) {
       return res.status(400).send(
         Response.badRequest({
           msg: "You should add user data to create a new user.",
@@ -137,14 +137,14 @@ exports.createAPI = async (req, res) => {
       );
     }
     /// validate if the user is already exist...
-    const isUserExist = await userDB.getUserByUsername(data.username);
+    const isUserExist = await userDB.getUserByUsername(username);
     if (isUserExist !== null)
       return res.status(401).send(
         Response.badRequest({
           msg: "Username is already exist.",
         })
       );
-    const isEmailExist = await userDB.getUserByEmail(data.email);
+    const isEmailExist = await userDB.getUserByEmail(email);
     if (isEmailExist !== null)
       return res.status(401).send(
         Response.badRequest({
@@ -152,8 +152,8 @@ exports.createAPI = async (req, res) => {
         })
       );
 
-    await userDB.addUserAuth(data);
-    const result = await userDB.addProfile(data);
+    await userDB.addUserAuth(username, email, password);
+    const result = await userDB.addProfile(username, email);
     if (result.code === 11000 || result.level === "error") {
       return res.status(401).send(
         Response.unauthorized({
@@ -250,7 +250,7 @@ exports.loginAPI = async (req, res) => {
   } catch (error) {
     return res
       .status(400)
-      .send(Response.badRequest({ msg: "Username is not exist." }));
+      .send(Response.badRequest({ msg: "Username/Email is not exist." }));
   }
 
   const isValid = await userDB.isValidated(filter, password);
