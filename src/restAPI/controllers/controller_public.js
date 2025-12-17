@@ -191,7 +191,7 @@ exports.createAPI = async (req, res) => {
             msg: result._message,
             code: 201,
             // data: { result, tokens },
-            data: { result },
+            data: result,
         })
     );
     } catch (error) {
