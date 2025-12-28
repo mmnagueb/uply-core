@@ -25,7 +25,7 @@ const addUserAuth = async (username, email, password) => {
         });
     } catch (error) {
         logger.error(error);
-        return error;
+        return error
     }
 };
 

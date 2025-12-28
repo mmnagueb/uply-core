@@ -45,20 +45,44 @@ exports.createAPI = async (req, res) => {
     /// validate if the user is already exist...
     const isUserExist = await userDB.getUserByUsername(username);
     if (isUserExist !== null)
-      return res.status(401).send(
+      return res.status(400).send(
         Response.badRequest({
           msg: "Username is already exist.",
         })
       );
     const isEmailExist = await userDB.getUserByEmail(email);
     if (isEmailExist !== null)
-      return res.status(401).send(
+      return res.status(400).send(
         Response.badRequest({
           msg: "Email is already exist.",
         })
       );
 
-    await userDB.addUserAuth(username, email, password);
+    const userAuthResult = await userDB.addUserAuth(username, email, password);
+    if (userAuthResult.level === "error") {
+      if (userAuthResult.errors?.email) {
+        return res.status(400).send(
+          Response.badRequest({
+            msg: userAuthResult.errors.email.message
+          })
+        );
+      }
+
+      if (userAuthResult.errors?.password) {
+        return res.status(400).send(
+          Response.badRequest({
+            msg: userAuthResult.errors.password.message
+          })
+        );
+      }
+
+      return res.status(520).send(
+        Response.unknown({
+          msg: userAuthResult.level.message,
+        })
+      );
+    }
+
     const result = await userDB.addProfile(username, email);
     if (result.code === 11000 || result.level === "error") {
       return res.status(401).send(
@@ -67,7 +91,7 @@ exports.createAPI = async (req, res) => {
         })
       );
     }
-    
+
     return res.status(201).send(
       Response.successful({
         msg: result._message,
@@ -77,7 +101,9 @@ exports.createAPI = async (req, res) => {
     );
   } catch (error) {
     logger.error(error);
-    return res.status(520).send(Response.unknown());
+    return res.status(400).send(
+      Response.badRequest({ msg: error })
+    );
   }
 };
 
@@ -131,7 +157,7 @@ exports.loginAPI = async (req, res) => {
   const isValid = await userDB.isValidated(filter, password);
   if (isValid !== true) {
     return res
-      .status(400)
+      .status(401)
       .send(Response.unauthorized({ msg: "Password is incorrect." }));
   }
 
