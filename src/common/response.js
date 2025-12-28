@@ -63,7 +63,7 @@ class Response {
         return {
             result: {
                 message: "unknown error!",
-                code: 500,
+                code: 520,
                 success: false,
                 data: null,
             },

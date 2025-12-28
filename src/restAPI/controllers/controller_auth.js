@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 /* eslint-disable-next-line */
 const logger = require("../../../logger").logger;
-const Response = require("../../common/response").Response;
+const { Response } = require("../../common/response");
 const authDb = require("./../../database/db_auth");
 
 const jwt = require("jsonwebtoken");
@@ -29,7 +29,7 @@ exports.logoutAPI = async (req, res) => {
   const token = authHeader && authHeader.split(" ")[1];
   const result = await authDb.removeTokens(token);
   if (!result) {
-    return res.status(500).send(Response.unknown({}));
+    return res.status(520).send(Response.unknown({}));
   }
   return res.status(204).send(
     Response.successful({

@@ -1,7 +1,8 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const env = require("dotenv").config();
-const getTokenByUsername = require("./src/database/db_auth").getTokenByUsername;
+const { getTokenByUsername } = require("./src/database/db_auth");
+
 // const process = require("process");
 
 // create new workers
@@ -28,7 +29,7 @@ const logger = require("./logger").logger;
 /**
  *  for Response
  */
-const Response = require("./src/common/response").Response;
+const { Response } = require("./src/common/response");
 
 /**
  *  setting various HTTP headers [https://helmetjs.github.io/]
@@ -56,6 +57,7 @@ app.use((req, res, next) => {
 // Routes
 const routePublicAPI = require("./src/restAPI/routes/route_public");
 const routeAuthAPI = require("./src/restAPI/routes/route_auth");
+const routeUserAPI = require("./src/restAPI/routes/route_user");
 
 async function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
@@ -90,12 +92,10 @@ mongo_conn_native.connectToMongo().then(
 
     // public apis which does not need to authentication
     app.use("/api/v1/public", routePublicAPI);
-    // // user api
-    // app.use("/api/v1/user", authenticateToken, routeUserAPI);
-    // // timeline api
-    // app.use("/api/v1/post", authenticateToken, routePostAPI);
     // auth api
     app.use("/api/v1/auth", authenticateToken, routeAuthAPI);
+    // user api
+    app.use("/api/v1/user", authenticateToken, routeUserAPI);
 
     /**
      *      Get port number from configuration file
