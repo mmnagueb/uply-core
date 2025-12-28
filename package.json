@@ -9,11 +9,11 @@
   },
   "scripts": {
     "prepare": "husky install && npm run fixes",
-    "lint": "npx eslint '**/*.js' --ignore-pattern node_modules/ coverage",
+    "lint": "npx eslint '**/*.js' --ignore-pattern node_modules/ --ignore-pattern coverage/",
     "fixes": "npm run lint -- --fix",
     "test": "jest --detectOpenHandles --coverage",
     "local": "nodemon server.js",
-    "start": "node server.js"
+    "start": "NODE_ENV=production node server.js"
   },
   "repository": {
     "type": "git",

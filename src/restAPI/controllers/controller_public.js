@@ -9,12 +9,12 @@ const authDB = require("./../../database/db_auth");
 
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const process = require("dotenv").config();
+// const process = require("dotenv").config();
 var nodemailer = require("nodemailer");
 const env = require("../../../config/default.json").env;
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.parsed.ACCESS_TOKEN_SECRET, {
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: "360d",
   });
 }
@@ -42,8 +42,8 @@ async function sendEmail(password, userEmail) {
     let transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.parsed.GMAIL_NODEMAILER_EMAIL,
-        pass: process.parsed.GMAIL_NODEMAILER_PASS,
+        user: process.env.GMAIL_NODEMAILER_EMAIL,
+        pass: process.env.GMAIL_NODEMAILER_PASS,
       },
       // host: account.smtp.host,
       // port: account.smtp.port,
@@ -262,7 +262,7 @@ exports.loginAPI = async (req, res) => {
 
   const user = { username: consumer.username };
   const accessToken = generateAccessToken(user);
-  const refreshToken = jwt.sign(user, process.parsed.REFRESH_TOKEN_SECRET);
+  const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
   const result = await authDB.updateTokens(
     consumer._id,
     accessToken,
@@ -276,7 +276,7 @@ exports.loginAPI = async (req, res) => {
     const tokens = await authDB.addTokens(consumer, accessToken, refreshToken);
     return res.status(200).send(
       Response.successful({
-        data: tokens
+        data: tokens,
       })
     );
   }
@@ -306,14 +306,11 @@ exports.refreshAPI = async (req, res) => {
   //if (!refreshTokens.includes(refreshToken)) return res.sendStatus(403);
   jwt.verify(
     refreshToken,
-    process.parsed.REFRESH_TOKEN_SECRET,
+    process.env.REFRESH_TOKEN_SECRET,
     async (err, user) => {
       if (err) return res.sendStatus(403);
       const accessToken = generateAccessToken({ name: user.username });
-      const newRefreshToken = jwt.sign(
-        user,
-        process.parsed.REFRESH_TOKEN_SECRET
-      );
+      const newRefreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
       const result = await authDB.updateTokens(
         username,
         accessToken,
