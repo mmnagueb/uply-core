@@ -1,4 +1,4 @@
-const { Response } = require("../../common/response");
+const { Response } = require("../../utils/response");
 const userDb = require("./../../database/db_user");
 
 /**
@@ -12,10 +12,11 @@ const userDb = require("./../../database/db_user");
 
 exports.updateAPI = async (req, res) => {
   try {
-    const username = req.user.username;
+    // const username = req.user.username;
+    const userId = req.userMongoId;
     const user = req.body.data;
 
-    await userDb.updateUser(user, username);
+    await userDb.updateUser(user, userId);
 
     return res.status(200).send(
       Response.successful({
@@ -46,6 +47,7 @@ exports.profileAPI = async (req, res) => {
   try {
     const username = req.user.username;
     const profile = await userDb.getUserByUsername(username);
+    /// TODO update actual profile
 
     return res.status(200).send(
       Response.successful({

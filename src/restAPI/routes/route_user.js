@@ -10,7 +10,7 @@ const controller_appraisal_modules = require("../controllers/controller_user");
 router.post("/update", controller_appraisal_modules.updateAPI);
 
 /**
- *      /profile/:id to get user profile 
+ *      /profile to get user profile 
  */
 router.get("/profile", controller_appraisal_modules.profileAPI);
 

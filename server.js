@@ -29,7 +29,7 @@ const logger = require("./logger").logger;
 /**
  *  for Response
  */
-const { Response } = require("./src/common/response");
+const { Response } = require("./src/utils/response");
 
 /**
  *  setting various HTTP headers [https://helmetjs.github.io/]
@@ -74,11 +74,12 @@ async function authenticateToken(req, res, next) {
     if (err) return res.status(403).send(Response.forbidden({}));
     /// check in database and compare the tokens
     const usr = user.username ?? user.name;
-    const dbToken = await getTokenByUsername(usr);
+    const [dbToken, mongoId] = await getTokenByUsername(usr);
     /// if it's match next()
     if (token === dbToken) {
       /// if it's not match deny
       req.user = user;
+      req.userMongoId = mongoId
       return next();
     }
     return res.status(403).send(Response.forbidden({}));
