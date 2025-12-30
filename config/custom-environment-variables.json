@@ -1,0 +1,5 @@
+{
+    "port": "PORT",
+    "mongo_conn_str": "MONGO_CONN_STR",
+    "base_url": "BASE_URL"
+}

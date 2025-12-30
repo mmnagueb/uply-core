@@ -1,20 +1,20 @@
-const userProfile = require("../model/user/profile");
-const auth = require("../model/auth/auth");
+const UserProfile = require("../model/user/profile");
+const UserAuth = require("../model/auth/user_auth");
+const UserToken = require("../model/auth/user_token");
 require("../../logger").intialize();
 const logger = require("../../logger").logger;
 
 const addTokens = async (user, _accessToken, _refreshToken) => {
   try {
     const filter = { username: user.username.toLowerCase() };
-    const profile = await userProfile.findOne(filter);
+    const profile = await UserAuth.findOne(filter);
 
     const data = {
       username: profile._id,
       accessToken: _accessToken,
       refreshToken: _refreshToken,
     };
-    //const result = await auth.findOneAndUpdate(filter, data);
-    const result = await auth.create(data);
+    const result = await UserToken.create(data);
     return result;
   } catch (error) {
     logger.error(error);
@@ -24,7 +24,7 @@ const addTokens = async (user, _accessToken, _refreshToken) => {
 
 const removeTokens = async (token) => {
   try {
-    const result = await auth
+    const result = await UserToken
       .findOneAndRemove({ accessToken: token });
     return result;
   } catch (error) {
@@ -42,14 +42,15 @@ const updateTokens = async (
   try {
     let filter = {};
     if (isLogin === true) {
-      filter = { _id: username };
+      filter = { userAccount: username };
     } else {
       filter = { username: username.toLowerCase() };
     }
-    const profile = await userProfile.findOne(filter);
+
+    const profile = await UserProfile.findOne(filter);
     const updateFilter = { userId: profile._id };
 
-    const result = await auth.findOne(updateFilter);
+    const result = await UserToken.findOne(updateFilter);
     if (result !== null) {
       result.accessToken = _accessToken;
       result.refreshToken = newRefreshToken;
@@ -68,7 +69,7 @@ const updateTokens = async (
 const getToken = async (id) => {
   try {
     const filter = { userId: id };
-    const profile = await auth.findOne(filter);
+    const profile = await UserToken.findOne(filter);
     return profile.accessToken;
   } catch (error) {
     logger.error(error);
@@ -79,14 +80,23 @@ const getToken = async (id) => {
 /// need to be optimized using native `where()`
 const getTokenByUsername = async (_username) => {
   try {
-    const profile = await auth.find({}).populate("username");
-    const query2 = profile.filter((x) => {
-      if (x.username.username === _username) return x.accessToken;
-    });
-    if (query2[0].accessToken !== null) {
-      return query2[0].accessToken;
+    const authProfile = await UserAuth.findOne({ username: _username });
+    const currentProfile = await UserToken.findOne({ username: authProfile._id })
+    if ( currentProfile != null) {
+      if(currentProfile.accessToken !== null) {
+        // return { "token": currentProfile.accessToken, "id": authProfile._id }
+        return [currentProfile.accessToken, authProfile._id];
+      }
     }
     return false;
+    // const profile = await UserToken.find({}).populate("username");
+    // const query2 = profile.filter((x) => {
+    //   if (x.username.username === _username) return x.accessToken;
+    // });
+    // if (query2[0].accessToken !== null) {
+    //   return query2[0].accessToken;
+    // }
+    // return false;
   } catch (error) {
     logger.error(error);
     return error;
