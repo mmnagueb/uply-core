@@ -47,17 +47,23 @@ const createCourse = async (course) => {
 
 const getCourseIdByCourseName = async (courseName) => {
   try {
-    const result = await Course.findOne({ 'courseName.en': courseName});
+    const result = await Course.findOne({ 'courseName.en': courseName });
     return result._id;
   } catch (error) {
     logger.error(error);
     throw error;
   }
-}
+};
 
 const createCourseRegistrationTransaction = async (courseRegister) => {
   try {
-    /// check if exist!
+    const isExist = await CourseRegistration.exists({
+      courseId: courseRegister.courseId,
+      userId: courseRegister.userId,
+    });
+
+    if (isExist) throw "User is already registered.";
+
     return await CourseRegistration.create({
       courseId: courseRegister.courseId,
       userId: courseRegister.userId,
@@ -66,7 +72,7 @@ const createCourseRegistrationTransaction = async (courseRegister) => {
     logger.error(error);
     throw error;
   }
-}
+};
 
 module.exports = {
   createCourse,
