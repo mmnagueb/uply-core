@@ -58,6 +58,7 @@ app.use((req, res, next) => {
 const routePublicAPI = require("./src/restAPI/routes/route_public");
 const routeAuthAPI = require("./src/restAPI/routes/route_auth");
 const routeUserAPI = require("./src/restAPI/routes/route_user");
+const routeCourseAPI = require("./src/restAPI/routes/route_course");
 const routeUtilsAPI = require("./src/restAPI/routes/route_utils");
 
 async function authenticateToken(req, res, next) {
@@ -98,7 +99,9 @@ mongo_conn_native.connectToMongo().then(
     app.use("/api/v1/auth", authenticateToken, routeAuthAPI);
     // user api
     app.use("/api/v1/user", authenticateToken, routeUserAPI);
-    // user api
+    // course api
+    app.use("/api/v1/course", authenticateToken, routeCourseAPI);
+    // utils api
     app.use("/api/v1/utils", authenticateToken, routeUtilsAPI);
     /**
      *      Get port number from configuration file
