@@ -1,4 +1,5 @@
 const Course = require("../model/course/course");
+const CourseRegistration = require("../model/course/course.registration");
 const logger = require("../../logger").logger;
 
 const createCourse = async (course) => {
@@ -44,6 +45,37 @@ const createCourse = async (course) => {
   }
 };
 
+const getCourseIdByCourseName = async (courseName) => {
+  try {
+    const result = await Course.findOne({ 'courseName.en': courseName });
+    return result._id;
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
+};
+
+const createCourseRegistrationTransaction = async (courseRegister) => {
+  try {
+    const isExist = await CourseRegistration.exists({
+      courseId: courseRegister.courseId,
+      userId: courseRegister.userId,
+    });
+
+    if (isExist) throw "User is already registered.";
+
+    return await CourseRegistration.create({
+      courseId: courseRegister.courseId,
+      userId: courseRegister.userId,
+    });
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
+};
+
 module.exports = {
   createCourse,
+  getCourseIdByCourseName,
+  createCourseRegistrationTransaction
 };
