@@ -17,15 +17,14 @@ exports.updateAPI = async (req, res) => {
     const user = req.body.data;
 
     await userDb.updateUser(user, userId);
-
     return res.status(200).send(
       Response.successful({
         msg: "Profile has been updated.",
       })
     );
   } catch (error) {
-   return res.status(520).send(
-      Response.unknown({
+   return res.status(400).send(
+      Response.badRequest({
         msg: error.toString(),
       })
     ); 
@@ -45,9 +44,11 @@ exports.updateAPI = async (req, res) => {
 exports.profileAPI = async (req, res) => {
   /// update profile will be based on the authenticated user
   try {
-    const username = req.user.username;
-    const profile = await userDb.getUserByUsername(username);
+    const userId = req.userMongoId
+    // const profile = await userDb.getUserByUsername(username);
     /// TODO update actual profile
+
+    const profile = await userDb.getUserProfileById(userId)
 
     return res.status(200).send(
       Response.successful({

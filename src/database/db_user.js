@@ -88,7 +88,8 @@ const updateUser = async (user, userId) => {
     return result;
   } catch (error) {
     logger.error(error);
-    return error;
+    throw error
+    // return error;
   }
 };
 
@@ -110,12 +111,21 @@ const getUserByEmail = async (email) => {
   }
 };
 
+const getUserProfileById = async (id) => {
+  try {
+    return await UserProfile.findOne({ userAccount: id });
+  } catch (error) {
+    logger.error(error);
+    return error;
+  }
+}
+
 module.exports = {
   addProfile,
   addUserAuth,
   updateUser,
-  // getUser,
   getUserByUsername,
   getUserByEmail,
+  getUserProfileById,
   isValidated,
 };
