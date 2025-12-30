@@ -1,6 +1,6 @@
 const logger = require("../../../logger").logger;
 // const Response = require("../../common/response").Response;
-const { Response } = require("../../common/response");
+const { Response } = require("../../utils/response");
 const userDB = require("./../../database/db_user");
 const authDB = require("./../../database/db_auth");
 
@@ -83,7 +83,7 @@ exports.createAPI = async (req, res) => {
       );
     }
 
-    const result = await userDB.addProfile(username, email);
+    const result = await userDB.addProfile(userAuthResult._id);
     if (result.code === 11000 || result.level === "error") {
       return res.status(401).send(
         Response.unauthorized({
@@ -170,7 +170,7 @@ exports.loginAPI = async (req, res) => {
     refreshToken,
     true
   );
-  if (result.level == "error") {
+  if (result.level === "error") {
     return res.status(520).send(Response.unknown());
   }
   if (!result) {

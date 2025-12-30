@@ -29,7 +29,7 @@ const logger = require("./logger").logger;
 /**
  *  for Response
  */
-const { Response } = require("./src/common/response");
+const { Response } = require("./src/utils/response");
 
 /**
  *  setting various HTTP headers [https://helmetjs.github.io/]
@@ -58,6 +58,7 @@ app.use((req, res, next) => {
 const routePublicAPI = require("./src/restAPI/routes/route_public");
 const routeAuthAPI = require("./src/restAPI/routes/route_auth");
 const routeUserAPI = require("./src/restAPI/routes/route_user");
+const routeUtilsAPI = require("./src/restAPI/routes/route_utils");
 
 async function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
@@ -74,11 +75,12 @@ async function authenticateToken(req, res, next) {
     if (err) return res.status(403).send(Response.forbidden({}));
     /// check in database and compare the tokens
     const usr = user.username ?? user.name;
-    const dbToken = await getTokenByUsername(usr);
+    const [dbToken, mongoId] = await getTokenByUsername(usr);
     /// if it's match next()
     if (token === dbToken) {
       /// if it's not match deny
       req.user = user;
+      req.userMongoId = mongoId
       return next();
     }
     return res.status(403).send(Response.forbidden({}));
@@ -96,7 +98,8 @@ mongo_conn_native.connectToMongo().then(
     app.use("/api/v1/auth", authenticateToken, routeAuthAPI);
     // user api
     app.use("/api/v1/user", authenticateToken, routeUserAPI);
-
+    // user api
+    app.use("/api/v1/utils", authenticateToken, routeUtilsAPI);
     /**
      *      Get port number from configuration file
      *      ./config/default.json

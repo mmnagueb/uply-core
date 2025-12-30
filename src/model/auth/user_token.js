@@ -5,7 +5,7 @@ const UserTokenSchema = new Schema({
     username: {
         type: Schema.Types.ObjectId,
         ref: "UserProfile",
-        required: "User id is required.",
+        required: "Username is required.",
         trim: true,
         lowercase: true
     },

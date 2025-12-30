@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 /* eslint-disable-next-line */
 const logger = require("../../../logger").logger;
-const { Response } = require("../../common/response");
+const { Response } = require("../../utils/response");
 const authDb = require("./../../database/db_auth");
 
 const jwt = require("jsonwebtoken");
