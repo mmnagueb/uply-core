@@ -7,6 +7,11 @@ const controller_appraisal_modules = require("../controllers/controller_course")
 /**
  *      /create used to create a new course 
  */
-router.put("/create", controller_appraisal_modules.courseAPI);
+router.put("/create", controller_appraisal_modules.courseCreateAPI);
+
+/**
+ *      /create used to create a new course 
+ */
+router.post("/register", controller_appraisal_modules.courseRegisterAPI);
 
 module.exports = router;

@@ -1,23 +1,25 @@
 const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
 
-const courseSchema = new Schema(
+const CourseSchema = new Schema(
   {
     courseName: {
       en: {
         type: String,
         required: [true, "Course name (English) is required"],
         trim: true,
+        unique: true
       },
       ar: {
         type: String,
         required: [true, "Course name (Arabic) is required"],
         trim: true,
+        unique: true
       },
     },
     courseDesc: {
-      en: { type: String, trim: true },
-      ar: { type: String, trim: true },
+      en: { type: String, trim: true, unique: true },
+      ar: { type: String, trim: true, unique: true },
     },
     courseStatus: {
       en: {
@@ -84,6 +86,16 @@ const courseSchema = new Schema(
       min: [0, "Course length cannot be negative"],
     },
     courseImage: { type: String, trim: true },
+    // auto-generated from backend
+    createdAt: {
+      type: Date,
+      default: () => Date.now(),
+      immutable: true,
+    },
+    // auto-generated from backend
+    updatedAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
@@ -92,10 +104,10 @@ const courseSchema = new Schema(
   }
 );
 
-courseSchema.pre("save", function (next) {
+CourseSchema.pre("save", function (next) {
   this.updatedAt = Date.now();
   next();
 });
 
-const Course = model("Course", courseSchema);
+const Course = model("Course", CourseSchema);
 module.exports = Course;
