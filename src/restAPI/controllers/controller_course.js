@@ -110,3 +110,30 @@ exports.courseRegisterAPI = async (req, res) => {
     ); 
   }
 };
+
+/**
+ * @async
+ * @route   GET /api/v1/course/get-available-courses
+ * @returns {Course Register}
+ * @author  Bassam
+ * @access  private 
+ * @version 1.0
+ */
+
+exports.getAvailableCoursesAPI = async (req, res) => {
+  try { 
+    /// we might consider more filters in the future if needed.
+    const availableCourses = await courseDb.getAvailableCourses();
+    return res.status(200).send(
+      Response.successful({
+        data: availableCourses,
+      })
+    );
+  } catch (error) {
+   return res.status(400).send(
+      Response.badRequest({
+        msg: error.toString(),
+      })
+    ); 
+  }
+};

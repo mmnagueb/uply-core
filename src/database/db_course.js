@@ -45,16 +45,6 @@ const createCourse = async (course) => {
   }
 };
 
-const getCourseIdByCourseName = async (courseName) => {
-  try {
-    const result = await Course.findOne({ 'courseName.en': courseName });
-    return result._id;
-  } catch (error) {
-    logger.error(error);
-    throw error;
-  }
-};
-
 const updateCourse = async (filterByCourseName, course) => {
   try {
     const filter = { 'courseName.en': filterByCourseName.courseName }
@@ -71,6 +61,25 @@ const updateCourse = async (filterByCourseName, course) => {
     throw error
   }
 }
+
+const getCourseIdByCourseName = async (courseName) => {
+  try {
+    const result = await Course.findOne({ 'courseName.en': courseName });
+    return result._id;
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
+};
+
+const getAvailableCourses = async () => {
+  try {
+    return await Course.find({});
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
+};
 
 const createCourseRegistrationTransaction = async (courseRegister) => {
   try {
@@ -95,5 +104,6 @@ module.exports = {
   createCourse,
   updateCourse,
   getCourseIdByCourseName,
+  getAvailableCourses,
   createCourseRegistrationTransaction
 };
