@@ -19,4 +19,9 @@ router.post("/update", controller_appraisal_modules.courseUpdateAPI);
  */
 router.post("/register", controller_appraisal_modules.courseRegisterAPI);
 
+/**
+ *      /get-available-courses used to fetch all available courses
+ */
+router.get("/get-available-courses", controller_appraisal_modules.getAvailableCoursesAPI);
+
 module.exports = router;
