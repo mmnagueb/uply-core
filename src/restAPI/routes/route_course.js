@@ -24,4 +24,9 @@ router.post("/register", controller_appraisal_modules.courseRegisterAPI);
  */
 router.get("/get-available-courses", controller_appraisal_modules.getAvailableCoursesAPI);
 
+/**
+ *      /get-available-courses used to fetch all available courses
+ */
+router.get("/get-registered-courses", controller_appraisal_modules.getRegisteredCoursesAPI);
+
 module.exports = router;

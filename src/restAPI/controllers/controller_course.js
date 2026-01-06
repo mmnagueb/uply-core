@@ -137,3 +137,32 @@ exports.getAvailableCoursesAPI = async (req, res) => {
     ); 
   }
 };
+
+/**
+ * @async
+ * @route   GET /api/v1/course/get-registered-courses
+ * @returns {Course Register}
+ * @author  Bassam
+ * @access  private 
+ * @version 1.0
+ */
+
+exports.getRegisteredCoursesAPI = async (req, res) => {
+  try { 
+    /// we might consider more filters in the future if needed.
+    const userId = req.userMongoId;
+
+    const registeredCourses = await courseDb.getRegisteredCourses(userId);
+    return res.status(200).send(
+      Response.successful({
+        data: registeredCourses,
+      })
+    );
+  } catch (error) {
+   return res.status(400).send(
+      Response.badRequest({
+        msg: error.toString(),
+      })
+    ); 
+  }
+};
