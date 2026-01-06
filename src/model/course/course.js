@@ -85,6 +85,7 @@ const CourseSchema = new Schema(
       required: [true, "Course length is required"],
       min: [0, "Course length cannot be negative"],
     },
+    /// add [courseQuantity]
     courseImage: { type: String, trim: true },
     // auto-generated from backend
     createdAt: {

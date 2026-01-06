@@ -81,6 +81,16 @@ const getAvailableCourses = async () => {
   }
 };
 
+const getRegisteredCourses = async (userId) => {
+  try {
+    const filter = { 'userId': userId}
+    return await CourseRegistration.find(filter)
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
+};
+
 const createCourseRegistrationTransaction = async (courseRegister) => {
   try {
     const isExist = await CourseRegistration.exists({
@@ -105,5 +115,6 @@ module.exports = {
   updateCourse,
   getCourseIdByCourseName,
   getAvailableCourses,
+  getRegisteredCourses,
   createCourseRegistrationTransaction
 };
