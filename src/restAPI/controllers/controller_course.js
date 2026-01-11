@@ -29,6 +29,25 @@ exports.courseCreateAPI = async (req, res) => {
 };
 
 
+exports.courseReadAPI = async (req, res) => {
+  try {
+    const courseId = req.params.id;
+    const course = await courseDb.getCourseById(courseId);
+    
+    return res.status(200).send(
+      Response.successful({
+        data: course
+      })
+    );
+  } catch (error) {
+   return res.status(400).send(
+      Response.badRequest({
+        msg: error.toString(),
+      })
+    ); 
+  }
+}
+
 /**
  * @async
  * @route   POST /api/v1/course/update
@@ -41,25 +60,9 @@ exports.courseCreateAPI = async (req, res) => {
 exports.courseUpdateAPI = async (req, res) => {
 
   try {
-    /**
-     *  {
-     *    /// [ref] is used for query filter
-     *    "ref": { "courseName": "Introduction to Artificial Intelligence2"},
-     * 
-     *    /// [data] contains the updated course data
-     *    "data": {
-     *       "courseName": {
-     *         "en": "Introduction to Artificial Intelligence",
-     *         "ar": "مقدمة في الذكاء الاصطناعي"
-     *      },
-     *       ...
-     *    }
-     *  }
-     * 
-     */
-    const filterByCourseName = req.body.ref;
+    const courseId = req.params.id;
     const newCourseData = req.body.data;
-    const updatedCourse = await courseDb.updateCourse(filterByCourseName, newCourseData);
+    const updatedCourse = await courseDb.updateCourse(courseId, newCourseData);
     
     return res.status(200).send(
       Response.successful({

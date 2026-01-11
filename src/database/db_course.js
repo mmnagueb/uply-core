@@ -45,11 +45,31 @@ const createCourse = async (course) => {
   }
 };
 
-const updateCourse = async (filterByCourseName, course) => {
+const getCourseByCourseName = async (courseName) => {
   try {
-    const filter = { 'courseName.en': filterByCourseName.courseName }
+    const result = await Course.findOne({ 'courseName.en': courseName });
+    return result;
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
+};
+
+const getCourseById = async (courseId) => {
+  try {
+    const result = await Course.findById(courseId);
+    return result;
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
+};
+
+const updateCourse = async (courseId, course) => {
+  try {
+    const filter = { _id: courseId };
     const update = course;
-    const options = { new: true, runValidators: true }; 
+    const options = { new: true, runValidators: true };
     const result = await Course.findOneAndUpdate(
       filter,
       { $set: update },
@@ -58,9 +78,9 @@ const updateCourse = async (filterByCourseName, course) => {
     return result;
   } catch (error) {
     logger.error(error);
-    throw error
+    throw error;
   }
-}
+};
 
 const getCourseIdByCourseName = async (courseName) => {
   try {
@@ -112,6 +132,8 @@ const createCourseRegistrationTransaction = async (courseRegister) => {
 
 module.exports = {
   createCourse,
+  getCourseById,
+  getCourseByCourseName,
   updateCourse,
   getCourseIdByCourseName,
   getAvailableCourses,
