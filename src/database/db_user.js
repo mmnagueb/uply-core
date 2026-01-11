@@ -113,7 +113,10 @@ const getUserByEmail = async (email) => {
 
 const getUserProfileById = async (id) => {
   try {
-    return await UserProfile.findOne({ userAccount: id });
+    return await UserProfile.findOne({ userAccount: id }).populate(
+      "userAccount",
+      "username email"
+    );
   } catch (error) {
     logger.error(error);
     return error;
